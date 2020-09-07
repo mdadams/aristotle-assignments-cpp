@@ -1,0 +1,51 @@
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+project(basics LANGUAGES CXX)
+
+option(ENABLE_EXTRAS "Enable extras" false)
+
+set(CMAKE_VERBOSE_MAKEFILE true)
+set(CMAKE_EXPORT_COMPILE_COMMANDS true)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED true)
+
+find_package(Catch2 REQUIRED)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR
+  CMAKE_CXX_COMPILER_ID MATCHES Clang)
+	add_compile_options("-pedantic-errors")
+endif()
+
+set(RANDOM_FOUND 0)
+if(EXISTS ${CMAKE_SOURCE_DIR}/lib/random.cpp AND
+  EXISTS ${CMAKE_SOURCE_DIR}/include/ra/random.hpp)
+	set(RANDOM_FOUND 1)
+endif()
+set(RATIONAL_FOUND 0)
+if (EXISTS ${CMAKE_SOURCE_DIR}/include/ra/rational.hpp)
+	set(RATIONAL_FOUND 1)
+endif()
+message("random found: ${RANDOM_FOUND}")
+message("rational found: ${RATIONAL_FOUND}")
+
+add_library(ra)
+target_include_directories(ra PUBLIC include)
+set_target_properties(ra PROPERTIES LINKER_LANGUAGE CXX)
+if(RANDOM_FOUND)
+	target_sources(ra PRIVATE lib/random.cpp)
+	add_executable(test_random app/test_random.cpp)
+	target_link_libraries(test_random ra Catch2::Catch2)
+	if (ENABLE_EXTRAS)
+		add_executable(trivial_random app/trivial_random.cpp)
+		target_link_libraries(trivial_random ra)
+	endif()
+endif()
+if(RATIONAL_FOUND)
+	target_sources(ra PUBLIC include/ra/rational.hpp)
+	add_executable(test_rational app/test_rational.cpp)
+	target_link_libraries(test_rational ra Catch2::Catch2)
+	if (ENABLE_EXTRAS)
+		add_executable(trivial_rational app/trivial_rational.cpp)
+		target_link_libraries(trivial_rational ra)
+	endif()
+endif()
