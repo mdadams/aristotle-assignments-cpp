@@ -1,0 +1,313 @@
+################################################################################
+# Basics
+################################################################################
+
+name "C++ Basics"
+
+required_files \
+  IDENTIFICATION.txt \
+
+whitelisted_files \
+  CMakeLists.txt \
+  include/ \
+  include/ra/ \
+  include/ra/random.hpp \
+  include/ra/rational.hpp \
+  lib/ \
+  lib/random.cpp \
+  app/ \
+  app/test_random.cpp \
+  app/test_rational.cpp \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  README.pdf \
+
+blacklisted_files  *
+
+report_files \
+  ${ARI_COMMIT_HISTORY_FILE} \
+  README.pdf \
+  CMakeLists.txt \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  include/ra/random.hpp \
+  lib/random.cpp \
+  app/test_random.cpp \
+  include/ra/rational.hpp \
+  app/test_rational.cpp \
+
+student_id_regex '^[Vv][0-9]+$'
+course_regex '^(SENG475|ECE596C)$'
+section_regex '^[Tt][0-9][0-9]$'
+term_regex '^[0-9]{4}-[0-9]{2}$'
+
+packages \
+  nonprog \
+  random_orig \
+  random_sane \
+  random_mod \
+  rational_orig \
+  rational_sane \
+  rational_mod \
+
+################################################################################
+# nonprog package
+################################################################################
+
+package-nonprog/name \
+  "Nonprogramming exercises"
+
+package-nonprog/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_DIST_DIR} \
+  exists README.pdf \
+
+package-nonprog/build_tool none
+
+################################################################################
+# random_orig package
+################################################################################
+
+package-random_orig/name \
+  "The code as originally submitted by the student."
+package-random_orig/optional 0
+
+package-random_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/random.hpp \
+  exists lib/random.cpp \
+  exists app/test_random.cpp \
+
+package-random_orig/build_tool \
+  cmake
+
+package-random_orig/builds test_random
+#package-random_orig/tests test_random
+
+# builds
+
+package-random_orig/build-test_random/name \
+  "Build the test_random program."
+package-random_orig/build-test_random/optional 0
+package-random_orig/build-test_random/depends_on configure
+
+# tests
+
+package-random_orig/test-test_random/name \
+  "Test the test_random program."
+package-random_orig/test-test_random/optional 0
+package-random_orig/test-test_random/depends_on build-test_random
+package-random_orig/test-test_random/test ${ARI_DERIVED_DIR}/test_random
+package-random_orig/test-test_random/timeout 15
+
+################################################################################
+# random_sane package
+################################################################################
+
+package-random_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-random_sane/optional 0
+
+package-random_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/random.hpp \
+  exists lib/random.cpp \
+  exists app/test_random.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/basics \
+  replace CMakeLists.txt \
+  create_or_replace trivial_random.cpp,app/test_random.cpp \
+  create_or_replace trivial_rational.cpp,app/test_rational.cpp
+
+package-random_sane/build_tool \
+  cmake
+
+package-random_sane/builds test_random
+
+# builds
+
+package-random_sane/build-test_random/name \
+  "Build the test_random program."
+package-random_sane/build-test_random/optional 0
+package-random_sane/build-test_random/depends_on configure
+
+################################################################################
+# random_mod package
+################################################################################
+
+package-random_mod/name \
+  "The code modified to use the instructor's test code."
+package-random_mod/optional 1
+
+package-random_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/random.hpp \
+  exists lib/random.cpp \
+  exists app/test_random.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/basics \
+  replace CMakeLists.txt \
+  create_or_replace test_random.cpp,app/test_random.cpp \
+  create_or_replace test_rational.cpp,app/test_rational.cpp \
+
+package-random_mod/build_tool \
+  cmake
+
+package-random_mod/builds test_random
+package-random_mod/tests test_random
+
+# configure
+package-random_mod/configure_env \
+  CXX="g++" CXXFLAGS="-fsanitize=address -fsanitize=undefined"
+
+# builds
+
+package-random_mod/build-test_random/name \
+  "Build the test_random program (with the instructor's test code)."
+package-random_mod/build-test_random/depends_on configure
+
+# tests
+
+package-random_mod/test-test_random/name \
+  "Test the test_random program (with the instructor's test code)."
+package-random_mod/test-test_random/depends_on build-test_random
+package-random_mod/test-test_random/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -c ${ARI_DERIVED_DIR}/test_random
+
+################################################################################
+# rational_orig package
+################################################################################
+
+package-rational_orig/name \
+  "The code as originally submitted by the student."
+package-rational_orig/optional 0
+
+# Required copy of required files and optional copy of others.
+package-rational_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/rational.hpp \
+  exists app/test_rational.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/basics \
+  exists CMakeLists.txt \
+  exists include/ra/rational.hpp \
+  exists app/test_rational.cpp \
+
+package-rational_orig/build_tool \
+  cmake
+
+package-rational_orig/builds test_rational
+#package-rational_orig/tests test_rational
+
+# builds
+
+package-rational_orig/build-test_rational/name \
+  "Build the test_rational program."
+package-rational_orig/build-test_rational/optional 0
+package-rational_orig/build-test_rational/depends_on configure
+
+# tests
+
+package-rational_orig/test-test_rational/name \
+  "Test the test_rational program."
+package-rational_orig/test-test_rational/optional 0
+package-rational_orig/test-test_rational/depends_on build-test_rational
+package-rational_orig/test-test_rational/test ${ARI_DERIVED_DIR}/test_rational
+package-rational_orig/test-test_rational/timeout 15
+
+################################################################################
+# rational_sane package
+################################################################################
+
+package-rational_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-rational_sane/optional 0
+
+package-rational_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/rational.hpp \
+  exists app/test_rational.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/basics \
+  replace CMakeLists.txt \
+  create_or_replace trivial_random.cpp,app/test_random.cpp \
+  create_or_replace trivial_rational.cpp,app/test_rational.cpp
+
+package-rational_sane/build_tool \
+  cmake
+
+package-rational_sane/builds test_rational
+
+# builds
+
+package-rational_sane/build-test_rational/name "Build the test_rational program."
+package-rational_sane/build-test_rational/optional 0
+package-rational_sane/build-test_rational/depends_on configure
+
+################################################################################
+# rational_mod package
+################################################################################
+
+package-rational_mod/name \
+  "The code modified to use the instructor's test code."
+package-rational_mod/optional 1
+
+package-rational_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/rational.hpp \
+  exists app/test_rational.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/basics \
+  replace CMakeLists.txt \
+  create_or_replace test_random.cpp,app/test_random.cpp \
+  create_or_replace test_rational.cpp,app/test_rational.cpp \
+
+package-rational_mod/build_tool \
+  cmake
+
+package-rational_mod/builds test_rational
+package-rational_mod/tests test_rational
+
+# configure
+package-rational_mod/configure_env \
+  CXX="g++" CXXFLAGS="-fsanitize=address -fsanitize=undefined"
+
+# builds
+
+package-rational_mod/build-test_rational/name \
+  "Build the test_rational program (with the instructor's test code)."
+package-rational_mod/build-test_rational/depends_on configure
+
+# tests
+
+package-rational_mod/test-test_rational/name \
+  "Test the test_rational program (with the instructor's test code)."
+package-rational_mod/test-test_rational/depends_on build-test_rational
+package-rational_mod/test-test_rational/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -c ${ARI_DERIVED_DIR}/test_rational

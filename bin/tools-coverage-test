@@ -1,0 +1,45 @@
+#! /usr/bin/env bash
+
+panic()
+{
+	echo "ERROR: $@"
+	exit 1
+}
+
+if [ "$#" -ne 1 ]; then
+	panic "no program specified"
+fi
+
+if [ -z "$ARI_DERIVED_DIR" ]; then
+	panic "ARI_DERIVED_DIR is not set"
+fi
+bin_dir="$ARI_DERIVED_DIR"
+
+errors=()
+
+if [ ! -d "$bin_dir/coverage" ]; then
+	errors+=("coverage directory missing")
+fi
+if [ ! -f "$bin_dir/coverage/index.html" ]; then
+	errors+=("main HTML file missing")
+fi
+
+gcno_files=($(find "$bin_dir" -mindepth 1 -name '*.gcno' -print))
+gcda_files=($(find "$bin_dir" -mindepth 1 -name '*.gcda' -print))
+if [ "${#gcno_files[@]}" -eq 0 ]; then
+	errors+=("no GCNO files")
+fi
+if [ "${#gcda_files[@]}" -eq 0 ]; then
+	errors+=("no GCDA files")
+fi
+
+if [ "${#errors[@]}" -ne 0 ]; then
+	echo "number of errors: ${#errors[@]}"
+	echo "errors:"
+	for error in "${errors[@]}"; do
+		echo "    $error"
+	done
+	exit 1
+fi
+
+exit 0

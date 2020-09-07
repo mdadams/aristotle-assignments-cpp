@@ -1,0 +1,411 @@
+################################################################################
+# Compile-Time Computation
+################################################################################
+
+name "Compile-Time Computation"
+
+required_files \
+  IDENTIFICATION.txt \
+
+whitelisted_files \
+  CMakeLists.txt \
+  include/ \
+  include/ra/ \
+  include/ra/cexpr_basic_string.hpp \
+  include/ra/mandelbrot.hpp \
+  include/ra/cexpr_math.hpp \
+  include/ra/biquad_filter.hpp \
+  app/ \
+  app/test_cexpr_basic_string.cpp \
+  app/test_mandelbrot.cpp \
+  app/test_cexpr_math.cpp \
+  app/test_biquad_filter.cpp \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  lib \
+  README.pdf \
+
+blacklisted_files  *
+
+report_files \
+  ${ARI_EXTRAS_DIR}/mandelbrot.pdf \
+  ${ARI_COMMIT_HISTORY_FILE} \
+  README.pdf \
+  CMakeLists.txt \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  include/ra/cexpr_basic_string.hpp \
+  include/ra/mandelbrot.hpp \
+  include/ra/cexpr_math.hpp \
+  include/ra/biquad_filter.hpp \
+  app/test_cexpr_basic_string.cpp \
+  app/test_mandelbrot.cpp \
+  app/test_cexpr_math.cpp \
+  app/test_biquad_filter.cpp \
+
+student_id_regex '^[Vv][0-9]+$'
+course_regex '^(SENG475|ECE596C)$'
+section_regex '^[Tt][0-9][0-9]$'
+term_regex '^[0-9]{4}-[0-9]{2}$'
+
+packages \
+  nonprog \
+  string_orig \
+  string_sane \
+  string_mod \
+  math_orig \
+  math_sane \
+  math_mod \
+
+################################################################################
+# nonprog package
+################################################################################
+
+package-nonprog/name \
+  "Nonprogramming exercises"
+
+package-nonprog/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_DIST_DIR} \
+  exists README.pdf \
+
+package-nonprog/build_tool none
+
+################################################################################
+# string_orig package
+################################################################################
+
+package-string_orig/name \
+  "The code as originally submitted by the student."
+package-string_orig/optional 0
+
+package-string_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/cexpr_basic_string.hpp \
+  exists include/ra/mandelbrot.hpp \
+  exists app/test_cexpr_basic_string.cpp \
+  exists app/test_mandelbrot.cpp \
+
+package-string_orig/build_tool \
+  cmake
+
+package-string_orig/configure_env \
+  CXX="clang++" CC="clang"
+
+package-string_orig/builds \
+  test_cexpr_basic_string test_mandelbrot
+
+# builds
+
+package-string_orig/build-test_cexpr_basic_string/name \
+  "Build the test_cexpr_basic_string program."
+package-string_orig/build-test_cexpr_basic_string/optional 0
+package-string_orig/build-test_cexpr_basic_string/depends_on configure
+
+package-string_orig/build-test_mandelbrot/name \
+  "Build the test_mandelbrot program."
+package-string_orig/build-test_mandelbrot/optional 0
+package-string_orig/build-test_mandelbrot/depends_on configure
+
+# tests
+
+package-string_orig/test-test_cexpr_basic_string/name \
+  "Test the test_cexpr_basic_string program."
+package-string_orig/test-test_cexpr_basic_string/optional 0
+package-string_orig/test-test_cexpr_basic_string/depends_on \
+  build-test_cexpr_basic_string
+package-string_orig/test-test_cexpr_basic_string/test \
+  ${ARI_DERIVED_DIR}/test_cexpr_basic_string
+package-string_orig/test-test_cexpr_basic_string/timeout 15
+
+package-string_orig/test-test_mandelbrot/name \
+  "Test the test_mandelbrot program."
+package-string_orig/test-test_mandelbrot/optional 0
+package-string_orig/test-test_mandelbrot/depends_on build-test_mandelbrot
+package-string_orig/test-test_mandelbrot/test \
+  ${ARI_DERIVED_DIR}/test_mandelbrot
+package-string_orig/test-test_mandelbrot/test_sandbox 0
+package-string_orig/test-test_mandelbrot/timeout 15
+
+################################################################################
+# string_sane package
+################################################################################
+
+package-string_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-string_sane/optional 0
+
+package-string_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/cexpr_basic_string.hpp \
+  exists include/ra/mandelbrot.hpp \
+  exists app/test_cexpr_basic_string.cpp \
+  exists app/test_mandelbrot.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/compile_time \
+  replace CMakeLists.txt \
+  create_or_replace trivial_cexpr_basic_string.cpp,app/test_cexpr_basic_string.cpp \
+  create_or_replace trivial_mandelbrot.cpp,app/test_mandelbrot.cpp \
+  create_or_replace trivial_cexpr_math.cpp,app/test_cexpr_math.cpp \
+  create_or_replace trivial_biquad_filter.cpp,app/test_biquad_filter.cpp
+
+package-string_sane/build_tool \
+  cmake
+
+package-string_sane/configure_env \
+  CXX="clang++" CC="clang"
+
+package-string_sane/builds \
+  test_cexpr_basic_string test_mandelbrot
+
+# builds
+
+package-string_sane/build-test_cexpr_basic_string/name \
+  "Build the (dummy) test_cexpr_basic_string program."
+package-string_sane/build-test_cexpr_basic_string/optional 0
+package-string_sane/build-test_cexpr_basic_string/depends_on configure
+
+package-string_sane/build-test_mandelbrot/name \
+  "Build the (dummy) test_mandelbrot program."
+package-string_sane/build-test_mandelbrot/optional 0
+package-string_sane/build-test_mandelbrot/depends_on configure
+
+################################################################################
+# string_mod package
+################################################################################
+
+package-string_mod/name \
+  "The code modified to use the instructor's test code."
+package-string_mod/optional 1
+
+package-string_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/cexpr_basic_string.hpp \
+  exists include/ra/mandelbrot.hpp \
+  exists app/test_cexpr_basic_string.cpp \
+  exists app/test_mandelbrot.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/compile_time \
+  replace CMakeLists.txt \
+  create_or_replace test_cexpr_basic_string.cpp,app/test_cexpr_basic_string.cpp \
+  create_or_replace test_mandelbrot.cpp,app/test_mandelbrot.cpp \
+  create_or_replace test_cexpr_math.cpp,app/test_cexpr_math.cpp \
+  create_or_replace test_biquad_filter.cpp,app/test_biquad_filter.cpp \
+
+package-string_mod/build_tool \
+  cmake
+
+package-string_mod/configure_env \
+  CXX="clang++" CC="clang"
+
+package-string_mod/builds \
+  test_cexpr_basic_string test_mandelbrot
+package-string_mod/tests \
+  test_cexpr_basic_string test_mandelbrot
+
+# builds
+
+package-string_mod/build-test_cexpr_basic_string/name \
+  "Build the test_cexpr_basic_string program (with the instructor's test code)."
+package-string_mod/build-test_cexpr_basic_string/depends_on configure
+
+package-string_mod/build-test_mandelbrot/name \
+  "Build the test_mandelbrot program (with the instructor's test code)."
+package-string_mod/build-test_mandelbrot/depends_on configure
+
+# tests
+
+package-string_mod/test-test_cexpr_basic_string/name \
+  "Test the test_cexpr_basic_string program (with the instructor's test code)."
+package-string_mod/test-test_cexpr_basic_string/depends_on \
+  build-test_cexpr_basic_string
+package-string_mod/test-test_cexpr_basic_string/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -c ${ARI_DERIVED_DIR}/test_cexpr_basic_string
+
+package-string_mod/test-test_mandelbrot/name \
+  "Test the test_mandelbrot program (with the instructor's test code)."
+package-string_mod/test-test_mandelbrot/depends_on build-test_mandelbrot
+package-string_mod/test-test_mandelbrot/test \
+  ${ARI_ASSIGNMENT_DIR}/../private/bin/compile_time-mandelbrot-test \
+  ${ARI_DERIVED_DIR}/test_mandelbrot
+package-string_mod/test-test_mandelbrot/test_sandbox 0
+
+################################################################################
+# math_orig package
+################################################################################
+
+package-math_orig/name \
+  "The code as originally submitted by the student."
+package-math_orig/optional 0
+
+package-math_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/cexpr_math.hpp \
+  exists include/ra/biquad_filter.hpp \
+  exists app/test_cexpr_math.cpp \
+  exists app/test_biquad_filter.cpp
+
+package-math_orig/build_tool \
+  cmake
+
+package-math_orig/configure_env \
+  CXX="clang++" CC="clang"
+
+package-math_orig/builds \
+  test_cexpr_math test_biquad_filter
+
+# builds
+
+package-math_orig/build-test_cexpr_math/name \
+  "Build the test_cexpr_math program."
+package-math_orig/build-test_cexpr_math/optional 0
+package-math_orig/build-test_cexpr_math/depends_on configure
+
+package-math_orig/build-test_biquad_filter/name \
+  "Build the test_biquad_filter program."
+package-math_orig/build-test_biquad_filter/optional 0
+package-math_orig/build-test_biquad_filter/depends_on configure
+
+# tests
+
+package-math_orig/test-test_cexpr_math/name \
+  "Test the test_cexpr_math program."
+package-math_orig/test-test_cexpr_math/optional 0
+package-math_orig/test-test_cexpr_math/depends_on build-test_cexpr_math
+package-math_orig/test-test_cexpr_math/test ${ARI_DERIVED_DIR}/test_cexpr_math
+package-math_orig/test-test_cexpr_math/timeout 15
+
+package-math_orig/test-test_biquad_filter/name \
+  "Test the test_biquad_filter program."
+package-math_orig/test-test_biquad_filter/optional 0
+package-math_orig/test-test_biquad_filter/depends_on build-test_biquad_filter
+package-math_orig/test-test_biquad_filter/test \
+  ${ARI_DERIVED_DIR}/test_biquad_filter
+package-math_orig/test-test_biquad_filter/timeout 15
+
+################################################################################
+# math_sane package
+################################################################################
+
+package-math_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-math_sane/optional 0
+
+package-math_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/cexpr_math.hpp \
+  exists include/ra/biquad_filter.hpp \
+  exists app/test_cexpr_math.cpp \
+  exists app/test_biquad_filter.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/compile_time \
+  replace CMakeLists.txt \
+  create_or_replace trivial_cexpr_basic_string.cpp,app/test_cexpr_basic_string.cpp \
+  create_or_replace trivial_mandelbrot.cpp,app/test_mandelbrot.cpp \
+  create_or_replace trivial_cexpr_math.cpp,app/test_cexpr_math.cpp \
+  create_or_replace trivial_biquad_filter.cpp,app/test_biquad_filter.cpp \
+
+package-math_sane/build_tool \
+  cmake
+
+package-math_sane/configure_env \
+  CXX="clang++" CC="clang"
+
+package-math_sane/builds \
+  test_cexpr_math test_biquad_filter
+
+# builds
+
+package-math_sane/build-test_cexpr_math/name \
+  "Build the (dummy) test_cexpr_math program."
+package-math_sane/build-test_cexpr_math/optional 0
+package-math_sane/build-test_cexpr_math/depends_on configure
+
+package-math_sane/build-test_biquad_filter/name \
+  "Build the (dummy) test_biquad_filter program."
+package-math_sane/build-test_biquad_filter/optional 0
+package-math_sane/build-test_biquad_filter/depends_on configure
+
+################################################################################
+# math_mod package
+################################################################################
+
+package-math_mod/name \
+  "The code modified to use the instructor's test code."
+package-math_mod/optional 1
+
+package-math_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/cexpr_math.hpp \
+  exists include/ra/biquad_filter.hpp \
+  exists app/test_cexpr_math.cpp \
+  exists app/test_biquad_filter.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/compile_time \
+  replace CMakeLists.txt \
+  create_or_replace test_cexpr_basic_string.cpp,app/test_cexpr_basic_string.cpp \
+  create_or_replace test_mandelbrot.cpp,app/test_mandelbrot.cpp \
+  create_or_replace test_cexpr_math.cpp,app/test_cexpr_math.cpp \
+  create_or_replace test_biquad_filter.cpp,app/test_biquad_filter.cpp \
+
+package-math_mod/build_tool \
+  cmake
+
+package-math_mod/configure_env \
+  CXX="clang++" CC="clang"
+
+package-math_mod/builds \
+  test_cexpr_math test_biquad_filter
+package-math_mod/tests \
+  test_cexpr_math test_biquad_filter
+
+# builds
+
+package-math_mod/build-test_cexpr_math/name \
+  "Build the test_cexpr_math program (with the instructor's test code)."
+package-math_mod/build-test_cexpr_math/depends_on configure
+
+package-math_mod/build-test_biquad_filter/name \
+  "Build the test_biquad_filter program (with the instructor's test code)."
+package-math_mod/build-test_biquad_filter/depends_on configure
+
+# tests
+
+package-math_mod/test-test_cexpr_math/name \
+  "Test the test_cexpr_math program (with the instructor's test code)."
+package-math_mod/test-test_cexpr_math/depends_on build-test_cexpr_math
+package-math_mod/test-test_cexpr_math/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -c ${ARI_DERIVED_DIR}/test_cexpr_math
+
+package-math_mod/test-test_biquad_filter/name \
+  "Test the test_biquad_filter program (with the instructor's test code)."
+package-math_mod/test-test_biquad_filter/depends_on build-test_biquad_filter
+package-math_mod/test-test_biquad_filter/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -c ${ARI_DERIVED_DIR}/test_biquad_filter

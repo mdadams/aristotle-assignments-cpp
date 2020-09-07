@@ -1,0 +1,281 @@
+################################################################################
+# Tools
+################################################################################
+
+name "Software Development Tools"
+
+required_files \
+  IDENTIFICATION.txt \
+
+whitelisted_files \
+  fibonacci/ \
+  fibonacci/fibonacci.cpp \
+  fibonacci/CMakeLists.txt \
+  fibonacci/main.cpp \
+  fibonacci/fibonacci.hpp \
+  hg2g/ \
+  hg2g/CMakeLists.txt \
+  hg2g/include/ \
+  hg2g/include/hg2g/ \
+  hg2g/include/hg2g/hg2g.hpp \
+  hg2g/lib/ \
+  hg2g/lib/answer.cpp \
+  hg2g/lib/question.cpp \
+  hg2g/src/ \
+  hg2g/src/answer.cpp \
+  boost_timer/ \
+  boost_timer/CMakeLists.txt \
+  boost_timer/fibonacci.cpp \
+  boost_timer/fibonacci.hpp \
+  boost_timer/timer.cpp \
+  cgal_in_circle/ \
+  cgal_in_circle/CMakeLists.txt \
+  cgal_in_circle/in_circle.cpp \
+  cgal_in_circle/in_sphere.cpp \
+  cgal_in_circle/utility.cpp \
+  cgal_in_circle/utility.hpp \
+  buggy/ \
+  buggy/CMakeLists.txt \
+  buggy/buggy.cpp \
+  buggy/Sanitizers.cmake \
+  coverage/ \
+  coverage/CMakeLists.txt \
+  coverage/CodeCoverage.cmake \
+  coverage/random.cpp \
+  coverage/run_tests \
+
+blacklisted_files *
+
+report_files \
+  ${ARI_COMMIT_HISTORY_FILE} \
+  fibonacci/CMakeLists.txt \
+  hg2g/CMakeLists.txt \
+  boost_timer/CMakeLists.txt \
+  cgal_in_circle/CMakeLists.txt \
+  buggy/CMakeLists.txt \
+  buggy/Sanitizers.cmake \
+  coverage/CMakeLists.txt \
+  coverage/CodeCoverage.cmake \
+
+student_id_regex '^[Vv][0-9]+$'
+course_regex '^(SENG475|ECE596C)$'
+section_regex '^[Tt][0-9][0-9]$'
+term_regex '^[0-9]{4}-[0-9]{2}$'
+
+packages fibonacci hg2g boost_timer cgal_in_circle buggy coverage
+
+################################################################################
+# fibonacci package
+################################################################################
+
+package-fibonacci/optional 0
+package-fibonacci/name \
+  "The fibonacci program."
+
+package-fibonacci/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution/fibonacci
+
+package-fibonacci/build_tool \
+  cmake
+package-fibonacci/builds fibonacci
+package-fibonacci/tests fibonacci
+
+# builds
+
+package-fibonacci/build-fibonacci/name \
+  "Build the fibonacci program."
+package-fibonacci/build-fibonacci/optional 0
+package-fibonacci/build-fibonacci/depends_on configure
+
+# tests
+
+package-fibonacci/test-fibonacci/name \
+  "Test the fibonacci program."
+package-fibonacci/test-fibonacci/optional 0
+package-fibonacci/test-fibonacci/depends_on build-fibonacci
+package-fibonacci/test-fibonacci/test ${ARI_DERIVED_DIR}/fibonacci
+
+################################################################################
+# hg2g package
+################################################################################
+
+package-hg2g/optional 0
+package-hg2g/name \
+  "The answer program."
+
+package-hg2g/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution/hg2g
+
+package-hg2g/build_tool \
+  cmake
+package-hg2g/builds answer
+package-hg2g/tests answer
+
+# builds
+
+package-hg2g/build-hg2g/name \
+  "Build the answer program."
+package-hg2g/build-hg2g/optional 0
+package-hg2g/build-hg2g/depends_on configure
+
+# tests
+
+package-hg2g/test-answer/name \
+  "Test the answer program."
+package-hg2g/test-answer/optional 0
+package-hg2g/test-answer/depends_on build-answer
+package-hg2g/test-answer/test ${ARI_DERIVED_DIR}/answer
+
+################################################################################
+# boost_timer package
+################################################################################
+
+package-boost_timer/name \
+  "The timer program."
+package-boost_timer/optional 0
+
+package-boost_timer/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution/boost_timer
+
+package-boost_timer/build_tool \
+  cmake
+package-boost_timer/builds timer
+package-boost_timer/tests timer
+
+# builds
+
+package-boost_timer/build-timer/name \
+  "Build the timer program."
+package-boost_timer/build-timer/optional 0
+package-boost_timer/build-timer/depends_on configure
+
+# tests
+
+package-boost_timer/test-timer/name \
+  "Test the timer program."
+package-boost_timer/test-timer/optional 0
+package-boost_timer/test-timer/depends_on build-timer
+package-boost_timer/test-timer/test ${ARI_DERIVED_DIR}/timer
+
+################################################################################
+# cgal_in_circle package
+################################################################################
+
+package-cgal_in_circle/name \
+  "The in_circle and in_sphere programs."
+package-cgal_in_circle/optional 0
+
+package-cgal_in_circle/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution/cgal_in_circle
+
+package-cgal_in_circle/build_tool \
+  cmake
+package-cgal_in_circle/builds in_circle in_sphere
+package-cgal_in_circle/tests in_circle in_sphere
+
+# builds
+
+package-cgal_in_circle/build-in_circle/name \
+  "Build the in_circle program."
+package-cgal_in_circle/build-in_circle/optional 0
+package-cgal_in_circle/build-in_circle/depends_on configure
+
+package-cgal_in_circle/build-in_sphere/name \
+  "Build the in_sphere program."
+package-cgal_in_circle/build-in_sphere/optional 0
+package-cgal_in_circle/build-in_sphere/depends_on configure
+
+# tests
+
+package-cgal_in_circle/test-in_circle/name \
+  "Test the in_circle program."
+package-cgal_in_circle/test-in_circle/optional 0
+package-cgal_in_circle/test-in_circle/depends_on build-in_circle
+package-cgal_in_circle/test-in_circle/test ${ARI_DERIVED_DIR}/in_circle
+
+package-cgal_in_circle/test-in_sphere/name \
+  "Test the in_sphere program."
+package-cgal_in_circle/test-in_sphere/optional 0
+package-cgal_in_circle/test-in_sphere/depends_on build-in_sphere
+package-cgal_in_circle/test-in_sphere/test ${ARI_DERIVED_DIR}/in_sphere
+
+################################################################################
+# buggy package
+################################################################################
+
+package-buggy/name \
+  "The buggy program."
+package-buggy/optional 0
+
+package-buggy/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution/buggy
+
+package-buggy/build_tool \
+  cmake
+package-buggy/builds buggy
+package-buggy/tests buggy
+package-buggy/configure_options -DENABLE_ASAN=1 -DENABLE_UBSAN=1
+
+# builds
+
+package-buggy/build-buggy/name \
+  "Build the buggy program."
+package-buggy/build-buggy/optional 0
+package-buggy/build-buggy/depends_on configure
+
+# tests
+
+package-buggy/test-buggy/name \
+  "Test the buggy program."
+package-buggy/test-buggy/optional 0
+package-buggy/test-buggy/depends_on build-buggy
+package-buggy/test-buggy/test \
+  ${ARI_ASSIGNMENT_DIR}/../bin/tools-buggy-test \
+  ${ARI_DERIVED_DIR}/buggy
+
+################################################################################
+# coverage package
+################################################################################
+
+package-coverage/name \
+  "The coverage program."
+package-coverage/optional 0
+
+package-coverage/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution/coverage
+
+package-coverage/build_tool \
+  cmake
+package-coverage/builds coverage
+package-coverage/tests coverage
+package-coverage/configure_options -DENABLE_COVERAGE=1
+
+# builds
+
+package-coverage/build-coverage/name \
+  "Build the coverage target."
+package-coverage/build-coverage/optional 0
+package-coverage/build-coverage/depends_on configure
+package-coverage/build-coverage/executables
+
+# tests
+
+package-coverage/test-coverage/name \
+  "Test the coverage program."
+package-coverage/test-coverage/optional 0
+package-coverage/test-coverage/depends_on build-coverage
+package-coverage/test-coverage/test \
+  ${ARI_ASSIGNMENT_DIR}/../bin/tools-coverage-test \
+  ${ARI_DERIVED_DIR}/coverage

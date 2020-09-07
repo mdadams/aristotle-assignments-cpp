@@ -1,0 +1,22 @@
+#! /usr/bin/env bash
+
+panic()
+{
+	echo "ERROR: $@"
+	exit 1
+}
+
+if [ "$#" -ne 1 ]; then
+	panic "no program specified"
+fi
+
+program="$1"
+
+"$program"
+status=$?
+if [ "$status" -eq 0 ]; then
+	echo "program execution successful but should have failed"
+	exit 1
+fi
+
+exit 0

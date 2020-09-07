@@ -1,0 +1,24 @@
+#! /usr/bin/env bash
+
+panic()
+{
+	echo "ERROR: $@"
+	exit 1
+}
+
+count=0
+
+dist_dir="$1"
+
+for file in README.txt README.pdf; do
+	target_file="$dist_dir/$file"
+	if [ -f "$target_file" ]; then
+		count=$((count + 1))
+	fi
+done
+
+if [ "$count" -eq 0 ]; then
+	panic "no README.txt or README.pdf file provided"
+elif [ "$count" -gt 1 ]; then
+	panic "README.txt and README.pdf both provided"
+fi

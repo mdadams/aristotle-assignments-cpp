@@ -1,0 +1,274 @@
+################################################################################
+# Arithmetic
+################################################################################
+
+name "Interval Arithmetic and Applications"
+
+required_files \
+  IDENTIFICATION.txt \
+
+whitelisted_files \
+  CMakeLists.txt \
+  include/ \
+  include/ra/ \
+  include/ra/kernel.hpp \
+  include/ra/interval.hpp \
+  app/ \
+  app/test_kernel.cpp \
+  app/test_interval.cpp \
+  app/delaunay_triangulation.cpp \
+  app/triangulation_2.hpp \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  lib \
+  README.pdf \
+
+blacklisted_files  *
+
+report_files \
+  ${ARI_COMMIT_HISTORY_FILE} \
+  README.pdf \
+  CMakeLists.txt \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  include/ra/interval.hpp \
+  app/test_interval.cpp \
+  include/ra/kernel.hpp \
+  app/test_kernel.cpp \
+  app/delaunay_triangulation.cpp \
+
+student_id_regex '^[Vv][0-9]+$'
+course_regex '^(SENG475|ECE596C)$'
+section_regex '^[Tt][0-9][0-9]$'
+term_regex '^[0-9]{4}-[0-9]{2}$'
+
+packages \
+  nonprog \
+  interval_orig \
+  interval_sane \
+  interval_mod \
+  deltri_orig \
+
+#  deltri_sane \
+#  deltri_mod \
+
+################################################################################
+# nonprog package
+################################################################################
+
+package-nonprog/name \
+  "Nonprogramming exercises"
+
+package-nonprog/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_DIST_DIR} \
+  exists README.pdf \
+
+package-nonprog/build_tool none
+
+################################################################################
+# interval_orig package
+################################################################################
+
+package-interval_orig/name \
+  "The code as originally submitted by the student."
+package-interval_orig/optional 0
+
+package-interval_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/interval.hpp \
+  exists include/ra/kernel.hpp \
+  exists app/test_interval.cpp \
+  exists app/test_kernel.cpp \
+
+package-interval_orig/build_tool \
+  cmake
+
+package-interval_orig/builds test_interval test_kernel
+#package-interval_orig/tests test_interval test_kernel
+
+# builds
+
+package-interval_orig/build-test_interval/name \
+  "Build the test_interval program."
+package-interval_orig/build-test_interval/optional 0
+package-interval_orig/build-test_interval/depends_on configure
+
+package-interval_orig/build-test_kernel/name \
+  "Build the test_kernel program."
+package-interval_orig/build-test_kernel/optional 0
+package-interval_orig/build-test_kernel/depends_on configure
+
+# tests
+
+#package-interval_orig/test-test_interval/name \
+#  "Test the test_interval program."
+#package-interval_orig/test-test_interval/optional 0
+#package-interval_orig/test-test_interval/depends_on build-test_interval
+#package-interval_orig/test-test_interval/test ${ARI_DERIVED_DIR}/test_interval
+#package-interval_orig/test-test_interval/timeout 15
+
+#package-interval_orig/test-test_kernel/name \
+#  "Test the test_kernel program."
+#package-interval_orig/test-test_kernel/optional 0
+#package-interval_orig/test-test_kernel/depends_on build-test_kernel
+#package-interval_orig/test-test_kernel/test ${ARI_DERIVED_DIR}/test_kernel
+#package-interval_orig/test-test_kernel/timeout 15
+
+################################################################################
+# interval_sane package
+################################################################################
+
+package-interval_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-interval_sane/optional 0
+
+package-interval_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/interval.hpp \
+  exists include/ra/kernel.hpp \
+  exists app/test_interval.cpp \
+  exists app/test_kernel.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/arithmetic \
+  replace CMakeLists.txt \
+  create_or_replace trivial_interval.cpp,app/test_interval.cpp \
+  create_or_replace trivial_kernel.cpp,app/test_kernel.cpp
+
+package-interval_sane/build_tool \
+  cmake
+
+package-interval_sane/builds test_interval test_kernel
+
+# builds
+
+package-interval_sane/build-test_interval/name \
+  "Build the (dummy) test_interval program."
+package-interval_sane/build-test_interval/optional 0
+package-interval_sane/build-test_interval/depends_on configure
+
+package-interval_sane/build-test_kernel/name \
+  "Build the (dummy) test_kernel program."
+package-interval_sane/build-test_kernel/optional 0
+package-interval_sane/build-test_kernel/depends_on configure
+
+################################################################################
+# interval_mod package
+################################################################################
+
+package-interval_mod/name \
+  "The code modified to use the instructor's test code."
+package-interval_mod/optional 1
+
+package-interval_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/interval.hpp \
+  exists include/ra/kernel.hpp \
+  exists app/test_interval.cpp \
+  exists app/test_kernel.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/arithmetic \
+  replace CMakeLists.txt \
+  create_or_replace test_interval.cpp,app/test_interval.cpp \
+  create_or_replace test_kernel.cpp,app/test_kernel.cpp \
+
+package-interval_mod/build_tool \
+  cmake
+
+package-interval_mod/builds test_interval test_kernel
+package-interval_mod/tests test_interval test_kernel
+
+#  copy catch_local.hpp,app/catch_local.hpp \
+
+# builds
+
+package-interval_mod/build-test_interval/name \
+  "Build the test_internal program (with the instructor's test code)."
+package-interval_mod/build-test_interval/depends_on configure
+
+package-interval_mod/build-test_kernel/name \
+  "Build the test_kernel program (with the instructor's test code)."
+package-interval_mod/build-test_kernel/depends_on configure
+
+# tests
+
+package-interval_mod/test-test_interval/name \
+  "Test the test_interval program (with the instructor's test code)."
+package-interval_mod/test-test_interval/depends_on build-test_interval
+package-interval_mod/test-test_interval/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -c ${ARI_DERIVED_DIR}/test_interval
+
+package-interval_mod/test-test_kernel/name \
+  "Test the test_kernel program (with the instructor's test code)."
+package-interval_mod/test-test_kernel/depends_on build-test_kernel
+package-interval_mod/test-test_kernel/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -c ${ARI_DERIVED_DIR}/test_kernel
+
+################################################################################
+# deltri_orig package
+################################################################################
+
+package-deltri_orig/name \
+  "The code as originally submitted by the student."
+package-deltri_orig/optional 0
+
+package-deltri_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/interval.hpp \
+  exists include/ra/kernel.hpp \
+  exists app/test_interval.cpp \
+  exists app/test_kernel.cpp \
+  exists app/triangulation_2.hpp \
+  exists app/delaunay_triangulation.cpp \
+
+package-deltri_orig/build_tool \
+  cmake
+
+package-deltri_orig/builds delaunay_triangulation
+# Note: In this case, we must test the original code.
+package-deltri_orig/tests delaunay_triangulation
+
+# builds
+
+#package-deltri_orig/build-test_interval/name "Build the test_interval program."
+#package-deltri_orig/build-test_interval/optional 0
+#package-deltri_orig/build-test_interval/depends_on configure
+
+#package-deltri_orig/build-test_kernel/name "Build the test_kernel program."
+#package-deltri_orig/build-test_kernel/optional 0
+#package-deltri_orig/build-test_kernel/depends_on configure
+
+package-deltri_orig/build-delaunay_triangulation/name \
+  "Build the delaunay_triangulation program."
+package-deltri_orig/build-delaunay_triangulation/optional 0
+package-deltri_orig/build-delaunay_triangulation/depends_on configure
+
+# tests
+
+package-deltri_orig/test-delaunay_triangulation/name \
+  "Test the delaunay_triangulation program."
+package-deltri_orig/test-delaunay_triangulation/optional 1
+package-deltri_orig/test-delaunay_triangulation/depends_on \
+  build-delaunay_triangulation
+package-deltri_orig/test-delaunay_triangulation/test \
+  ${ARI_ASSIGNMENT_DIR}/../private/bin/arithmetic-delaunay_triangulation-test
+package-deltri_orig/test-delaunay_triangulation/test_sandbox 0
+package-deltri_orig/test-delaunay_triangulation/timeout 0

@@ -1,0 +1,59 @@
+################################################################################
+# Project
+################################################################################
+
+name "Project"
+
+required_files \
+  IDENTIFICATION.txt \
+  README.txt \
+  CMakeLists.txt \
+  demo \
+  presentation.url \
+
+whitelisted_files *
+
+#validate ${ARI_ASSIGNMENT_DIR}/../public/bin/project-validate ${ARI_DIST_DIR}
+
+student_id_regex '^[Vv][0-9]+$'
+course_regex '^(SENG475|ECE596C)$'
+section_regex '^[Tt][0-9][0-9]$'
+term_regex '^[0-9]{4}-[0-9]{2}$'
+
+packages \
+  orig
+
+################################################################################
+# orig package
+################################################################################
+
+package-orig/name \
+  "The code exactly as submitted by the student."
+package-orig/optional 0
+
+package-orig/build_tool \
+  cmake
+
+package-orig/builds all install
+package-orig/tests demo
+
+# builds
+
+package-orig/build-all/name "Build the project."
+package-orig/build-all/optional 0
+package-orig/build-all/depends_on configure
+package-orig/build-all/executables
+
+package-orig/build-install/name "Install the project."
+package-orig/build-install/optional 0
+package-orig/build-install/depends_on configure
+package-orig/build-install/executables
+
+# tests
+
+package-orig/test-demo/name "Run the demo program."
+package-orig/test-demo/optional 0
+package-orig/test-demo/depends_on build-all build-install
+package-orig/test-demo/test \
+  ${ARI_INSTALL_DIR}/bin/demo
+package-orig/test-demo/timeout 300

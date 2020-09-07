@@ -1,0 +1,389 @@
+################################################################################
+# Containers
+################################################################################
+
+name "Containers"
+
+required_files \
+  IDENTIFICATION.txt \
+
+whitelisted_files \
+  CMakeLists.txt \
+  include/ \
+  include/ra/ \
+  include/ra/intrusive_list.hpp \
+  include/ra/sv_set.hpp \
+  include/ra/parent_from_member.hpp \
+  app/ \
+  app/test_intrusive_list.cpp \
+  app/test_sv_set.cpp \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  lib \
+  README.pdf \
+
+blacklisted_files  *
+
+report_files \
+  ${ARI_COMMIT_HISTORY_FILE} \
+  README.pdf \
+  CMakeLists.txt \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  include/ra/sv_set.hpp \
+  app/test_sv_set.cpp \
+  include/ra/intrusive_list.hpp \
+  app/test_intrusive_list.cpp \
+
+student_id_regex '^[Vv][0-9]+$'
+course_regex '^(SENG475|ECE596C)$'
+section_regex '^[Tt][0-9][0-9]$'
+term_regex '^[0-9]{4}-[0-9]{2}$'
+
+packages \
+  nonprog \
+  set_orig \
+  set_sane \
+  set_mod \
+  set_mod_san \
+  list_orig \
+  list_sane \
+  list_mod \
+  list_mod_san \
+
+################################################################################
+# nonprog package
+################################################################################
+
+package-nonprog/name \
+  "Nonprogramming exercises"
+
+package-nonprog/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_DIST_DIR} \
+  exists README.pdf \
+
+package-nonprog/build_tool none
+
+################################################################################
+# set_orig package
+################################################################################
+
+package-set_orig/name \
+  "The code as originally submitted by the student."
+package-set_orig/optional 0
+
+package-set_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/sv_set.hpp \
+  exists app/test_sv_set.cpp \
+
+package-set_orig/build_tool \
+  cmake
+
+package-set_orig/builds test_sv_set
+
+# builds
+
+package-set_orig/build-test_sv_set/name \
+  "Build the test_sv_set program."
+package-set_orig/build-test_sv_set/optional 0
+package-set_orig/build-test_sv_set/depends_on configure
+
+# tests
+
+################################################################################
+# set_sane package
+################################################################################
+
+package-set_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-set_sane/optional 0
+
+package-set_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/sv_set.hpp \
+  exists app/test_sv_set.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/containers \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace trivial_intrusive_list.cpp,app/test_intrusive_list.cpp \
+  create_or_replace trivial_sv_set.cpp,app/test_sv_set.cpp
+
+package-set_sane/build_tool \
+  cmake
+
+package-set_sane/builds test_sv_set
+
+# builds
+
+package-set_sane/build-test_sv_set/name \
+  "Build the (dummy) test_sv_set program."
+package-set_sane/build-test_sv_set/optional 0
+package-set_sane/build-test_sv_set/depends_on configure
+
+################################################################################
+# set_mod package
+################################################################################
+
+package-set_mod/name \
+  "The code modified to use the instructor's test code."
+package-set_mod/optional 1
+
+package-set_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/sv_set.hpp \
+  exists app/test_sv_set.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/containers \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace test_intrusive_list.cpp,app/test_intrusive_list.cpp \
+  create_or_replace test_sv_set.cpp,app/test_sv_set.cpp \
+
+package-set_mod/build_tool \
+  cmake
+
+package-set_mod/builds test_sv_set
+package-set_mod/tests test_sv_set
+
+# builds
+
+package-set_mod/build-test_sv_set/name \
+  "Build the test_sv_set program (with the instructor's test code)."
+package-set_mod/build-test_sv_set/depends_on configure
+
+# tests
+
+package-set_mod/test-test_sv_set/name \
+  "Test the test_sv_set program (with the instructor's test code)."
+package-set_mod/test-test_sv_set/depends_on build-test_sv_set
+package-set_mod/test-test_sv_set/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -X -c ${ARI_DERIVED_DIR}/test_sv_set
+
+################################################################################
+# set_mod_san package (with sanitizers)
+################################################################################
+
+package-set_mod_san/name \
+  "The code modified to use the instructor's test code (with sanitizers)."
+package-set_mod_san/optional 1
+
+package-set_mod_san/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/sv_set.hpp \
+  exists app/test_sv_set.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/containers \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace test_intrusive_list.cpp,app/test_intrusive_list.cpp \
+  create_or_replace test_sv_set.cpp,app/test_sv_set.cpp \
+
+package-set_mod_san/build_tool \
+  cmake
+
+# configure
+package-set_mod_san/configure_env \
+  CXX="g++" CXXFLAGS="-fsanitize=address -fsanitize=leak -fsanitize=undefined"
+
+package-set_mod_san/builds test_sv_set
+package-set_mod_san/tests test_sv_set
+
+# builds
+
+package-set_mod_san/build-test_sv_set/name \
+  "Build the test_sv_set program (with the instructor's test code)."
+package-set_mod_san/build-test_sv_set/depends_on configure
+
+# tests
+
+package-set_mod_san/test-test_sv_set/name \
+  "Test the test_sv_set program (with the instructor's test code)."
+package-set_mod_san/test-test_sv_set/depends_on build-test_sv_set
+package-set_mod_san/test-test_sv_set/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -X -c ${ARI_DERIVED_DIR}/test_sv_set
+
+################################################################################
+# list_orig package
+################################################################################
+
+package-list_orig/name \
+  "The code as originally submitted by the student."
+package-list_orig/optional 0
+
+package-list_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/intrusive_list.hpp \
+  exists include/ra/parent_from_member.hpp \
+  exists app/test_intrusive_list.cpp \
+
+package-list_orig/build_tool \
+  cmake
+
+package-list_orig/builds test_intrusive_list
+
+# builds
+
+package-list_orig/build-test_intrusive_list/name \
+  "Build the test_intrusive_list program."
+package-list_orig/build-test_intrusive_list/optional 0
+package-list_orig/build-test_intrusive_list/depends_on configure
+
+# tests
+
+################################################################################
+# list_sane package
+################################################################################
+
+package-list_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-list_sane/optional 0
+
+package-list_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/intrusive_list.hpp \
+  exists include/ra/parent_from_member.hpp \
+  exists app/test_intrusive_list.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/containers \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace trivial_intrusive_list.cpp,app/test_intrusive_list.cpp \
+  create_or_replace trivial_sv_set.cpp,app/test_sv_set.cpp
+
+package-list_sane/build_tool \
+  cmake
+
+package-list_sane/builds test_intrusive_list
+
+# builds
+
+package-list_sane/build-test_intrusive_list/name \
+  "Build the (dummy) test_intrusive_list program."
+package-list_sane/build-test_intrusive_list/optional 0
+package-list_sane/build-test_intrusive_list/depends_on configure
+
+################################################################################
+# list_mod package
+################################################################################
+
+package-list_mod/name \
+  "The code modified to use the instructor's test code."
+package-list_mod/optional 1
+
+package-list_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/intrusive_list.hpp \
+  exists include/ra/parent_from_member.hpp \
+  exists app/test_intrusive_list.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/containers \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace test_intrusive_list.cpp,app/test_intrusive_list.cpp \
+  create_or_replace test_sv_set.cpp,app/test_sv_set.cpp \
+
+package-list_mod/build_tool \
+  cmake
+
+package-list_mod/builds test_intrusive_list
+package-list_mod/tests test_intrusive_list
+
+# builds
+
+package-list_mod/build-test_intrusive_list/name \
+  "Build the test_intrusive_list program (with the instructor's test code)."
+package-list_mod/build-test_intrusive_list/depends_on configure
+
+# tests
+
+package-list_mod/test-test_intrusive_list/name \
+  "Test the test_intrusive_list program (with the instructor's test code)."
+package-list_mod/test-test_intrusive_list/depends_on build-test_intrusive_list
+package-list_mod/test-test_intrusive_list/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -X -c ${ARI_DERIVED_DIR}/test_intrusive_list
+
+################################################################################
+# list_mod_san package (with sanitizers)
+################################################################################
+
+package-list_mod_san/name \
+  "The code modified to use the instructor's test code (with sanitizers)."
+package-list_mod_san/optional 1
+
+package-list_mod_san/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/intrusive_list.hpp \
+  exists include/ra/parent_from_member.hpp \
+  exists app/test_intrusive_list.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/containers \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace test_intrusive_list.cpp,app/test_intrusive_list.cpp \
+  create_or_replace test_sv_set.cpp,app/test_sv_set.cpp
+
+package-list_mod_san/build_tool \
+  cmake
+
+package-list_mod_san/builds test_intrusive_list
+package-list_mod_san/tests test_intrusive_list
+
+# configure
+package-list_mod_san/configure_env \
+  CXX="g++" CXXFLAGS="-fsanitize=address -fsanitize=leak -fsanitize=undefined"
+
+# builds
+
+package-list_mod_san/build-test_intrusive_list/name \
+  "Build the test_intrusive_list program (with the instructor's test code)."
+package-list_mod_san/build-test_intrusive_list/depends_on configure
+
+# tests
+
+package-list_mod_san/test-test_intrusive_list/name \
+  "Test the test_intrusive_list program (with the instructor's test code)."
+package-list_mod_san/test-test_intrusive_list/depends_on \
+  build-test_intrusive_list
+package-list_mod_san/test-test_intrusive_list/test \
+  ${ARI_BIN_DIR}/ari_run_catch_app \
+  -I -t 10 -r -X -c ${ARI_DERIVED_DIR}/test_intrusive_list

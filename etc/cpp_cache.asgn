@@ -1,0 +1,335 @@
+################################################################################
+# Cache
+################################################################################
+
+name "Cache-Efficient Algorithms"
+
+required_files \
+  IDENTIFICATION.txt \
+
+whitelisted_files \
+  CMakeLists.txt \
+  include/ \
+  include/ra/ \
+  include/ra/matrix_transpose.hpp \
+  include/ra/matrix_multiply.hpp \
+  include/ra/fft.hpp \
+  app/ \
+  app/test_matrix_transpose.cpp \
+  app/test_matrix_multiply.cpp \
+  app/test_fft.cpp \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  include/ra/span.hpp \
+  lib \
+  README.pdf \
+
+blacklisted_files  *
+
+report_files \
+  ${ARI_COMMIT_HISTORY_FILE} \
+  README.pdf \
+  CMakeLists.txt \
+  Assertions.cmake \
+  CodeCoverage.cmake \
+  Sanitizers.cmake \
+  include/ra/span.hpp \
+  include/ra/matrix_transpose.hpp \
+  app/test_matrix_transpose.cpp \
+  include/ra/matrix_multiply.hpp \
+  app/test_matrix_multiply.cpp \
+  include/ra/fft.hpp \
+  app/test_fft.cpp \
+
+student_id_regex '^[Vv][0-9]+$'
+course_regex '^(SENG475|ECE596C)$'
+section_regex '^[Tt][0-9][0-9]$'
+term_regex '^[0-9]{4}-[0-9]{2}$'
+
+packages \
+  nonprog \
+  linalg_orig \
+  linalg_sane \
+  linalg_mod \
+  fft_orig \
+  fft_sane \
+  fft_mod \
+
+################################################################################
+# nonprog package
+################################################################################
+
+package-nonprog/name \
+  "Nonprogramming exercises"
+
+package-nonprog/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_DIST_DIR} \
+  exists README.pdf \
+
+package-nonprog/build_tool none
+
+################################################################################
+# linalg_orig package
+################################################################################
+
+package-linalg_orig/name \
+  "The code as originally submitted by the student."
+package-linalg_orig/optional 0
+
+package-linalg_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/matrix_transpose.hpp \
+  exists app/test_matrix_transpose.cpp \
+  exists include/ra/matrix_multiply.hpp \
+  exists app/test_matrix_multiply.cpp \
+  exists app/test_matrix_transpose.cpp \
+  exists app/test_matrix_multiply.cpp \
+
+package-linalg_orig/build_tool \
+  cmake
+
+package-linalg_orig/builds test_matrix_transpose test_matrix_multiply
+
+# builds
+
+package-linalg_orig/build-test_matrix_transpose/name \
+  "Build the test_matrix_transpose program."
+package-linalg_orig/build-test_matrix_transpose/optional 0
+package-linalg_orig/build-test_matrix_transpose/depends_on configure
+
+package-linalg_orig/build-test_matrix_multiply/name \
+  "Build the test_matrix_multiply program."
+package-linalg_orig/build-test_matrix_multiply/optional 0
+package-linalg_orig/build-test_matrix_multiply/depends_on configure
+
+# tests
+
+################################################################################
+# linalg_sane package
+################################################################################
+
+package-linalg_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-linalg_sane/optional 0
+
+package-linalg_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/matrix_transpose.hpp \
+  exists app/test_matrix_transpose.cpp \
+  exists include/ra/matrix_multiply.hpp \
+  exists app/test_matrix_multiply.cpp \
+  exists app/test_matrix_transpose.cpp \
+  exists app/test_matrix_multiply.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/cache \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace trivial_matrix_transpose.cpp,app/test_matrix_transpose.cpp \
+  create_or_replace trivial_matrix_multiply.cpp,app/test_matrix_multiply.cpp \
+
+package-linalg_sane/build_tool \
+  cmake
+
+package-linalg_sane/builds test_matrix_transpose test_matrix_multiply
+
+# builds
+
+package-linalg_sane/build-test_matrix_transpose/name \
+  "Build the (dummy) test_matrix_transpose program."
+package-linalg_sane/build-test_matrix_transpose/optional 0
+package-linalg_sane/build-test_matrix_transpose/depends_on configure
+
+package-linalg_sane/build-test_matrix_multiply/name \
+  "Build the (dummy) test_matrix_multiply program."
+package-linalg_sane/build-test_matrix_multiply/optional 0
+package-linalg_sane/build-test_matrix_multiply/depends_on configure
+
+################################################################################
+# linalg_mod package
+################################################################################
+
+package-linalg_mod/name \
+  "The code modified to use the instructor's test code."
+package-linalg_mod/optional 1
+
+package-linalg_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/matrix_transpose.hpp \
+  exists app/test_matrix_transpose.cpp \
+  exists include/ra/matrix_multiply.hpp \
+  exists app/test_matrix_multiply.cpp \
+  exists app/test_matrix_transpose.cpp \
+  exists app/test_matrix_multiply.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/cache \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/cache \
+  copy array_2.hpp,app/array_2.hpp \
+  copy matrix_transpose.cpp,app/matrix_transpose.cpp \
+  copy matrix_multiply.cpp,app/matrix_multiply.cpp \
+
+package-linalg_mod/build_tool \
+  cmake
+
+package-linalg_mod/builds test_matrix_transpose test_matrix_multiply
+package-linalg_mod/tests test_matrix_transpose test_matrix_multiply
+
+# builds
+
+package-linalg_mod/build-test_matrix_transpose/name \
+  "Build the test_matrix_transpose program (with the instructor's test code)."
+package-linalg_mod/build-test_matrix_transpose/targets matrix_transpose
+package-linalg_mod/build-test_matrix_transpose/executables matrix_transpose
+package-linalg_mod/build-test_matrix_transpose/depends_on configure
+
+package-linalg_mod/build-test_matrix_multiply/name \
+  "Build the test_matrix_multiply program (with the instructor's test code)."
+package-linalg_mod/build-test_matrix_multiply/targets matrix_multiply
+package-linalg_mod/build-test_matrix_multiply/executables matrix_multiply
+package-linalg_mod/build-test_matrix_multiply/depends_on configure
+
+# tests
+
+package-linalg_mod/test-test_matrix_transpose/name \
+  "Test the test_matrix_transpose program (with the instructor's test code)."
+package-linalg_mod/test-test_matrix_transpose/depends_on build-test_matrix_transpose
+package-linalg_mod/test-test_matrix_transpose/test \
+  ari_timeout -E \
+  ${ARI_ASSIGNMENT_DIR}/../private/bin/cache-matrix_transpose-test \
+  ${ARI_DERIVED_DIR}/matrix_transpose
+package-linalg_mod/test-test_matrix_transpose/test_sandbox 0
+
+package-linalg_mod/test-test_matrix_multiply/name \
+  "Test the test_matrix_multiply program (with the instructor's test code)."
+package-linalg_mod/test-test_matrix_multiply/depends_on build-test_matrix_multiply
+package-linalg_mod/test-test_matrix_multiply/test \
+  ari_timeout -E \
+  ${ARI_ASSIGNMENT_DIR}/../private/bin/cache-matrix_multiply-test \
+  ${ARI_DERIVED_DIR}/matrix_multiply
+package-linalg_mod/test-test_matrix_multiply/test_sandbox 0
+
+################################################################################
+# fft_orig package
+################################################################################
+
+package-fft_orig/name \
+  "The code as originally submitted by the student."
+package-fft_orig/optional 0
+
+package-fft_orig/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/fft.hpp \
+  exists app/test_fft.cpp \
+
+package-fft_orig/build_tool \
+  cmake
+
+package-fft_orig/builds test_fft
+
+# builds
+
+package-fft_orig/build-test_fft/name \
+  "Build the test_fft program."
+package-fft_orig/build-test_fft/optional 0
+package-fft_orig/build-test_fft/depends_on configure
+
+# tests
+
+################################################################################
+# fft_sane package
+################################################################################
+
+package-fft_sane/name \
+  "Code with modifications to perform API sanity checking."
+package-fft_sane/optional 0
+package-fft_sane/builds test_fft
+
+package-fft_sane/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/fft.hpp \
+  exists app/test_fft.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/cache \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  create_or_replace trivial_fft.cpp,app/test_fft.cpp
+
+package-fft_sane/build_tool \
+  cmake
+
+# builds
+
+package-fft_sane/build-test_fft/name \
+  "Build the (dummy) test_fft program."
+package-fft_sane/build-test_fft/optional 0
+package-fft_sane/build-test_fft/depends_on configure
+
+################################################################################
+# fft_mod package
+################################################################################
+
+package-fft_mod/name \
+  "The code modified to use the instructor's test code."
+package-fft_mod/optional 1
+
+package-fft_mod/generate \
+  ${ARI_BIN_DIR}/ari_pkgtrans \
+  cur_dir ${ARI_SOURCE_DIR} \
+  lndir ../../distribution \
+  exists CMakeLists.txt \
+  exists include/ra/fft.hpp \
+  exists app/test_fft.cpp \
+  cur_dir ${ARI_SOURCE_DIR} \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/common \
+  copy test.hpp,app/test.hpp \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../src/cache \
+  replace CMakeLists.txt \
+  create_or_replace Sanitizers.cmake \
+  src_dir ${ARI_ASSIGNMENT_DIR}/../private/src/cache \
+  copy array_2.hpp,app/array_2.hpp \
+  copy fft.cpp,app/fft.cpp \
+
+package-fft_mod/build_tool \
+  cmake
+
+package-fft_mod/builds test_fft
+package-fft_mod/tests test_fft
+
+# builds
+
+package-fft_mod/build-test_fft/name \
+  "Build the test_fft program (with the instructor's test code)."
+package-fft_mod/build-test_fft/targets fft
+package-fft_mod/build-test_fft/executables fft
+package-fft_mod/build-test_fft/depends_on configure
+
+# tests
+
+package-fft_mod/test-test_fft/name \
+  "Test the test_fft program (with the instructor's test code)."
+package-fft_mod/test-test_fft/depends_on build-test_fft
+package-fft_mod/test-test_fft/test \
+  ari_timeout -E \
+  ${ARI_ASSIGNMENT_DIR}/../private/bin/cache-fft-test \
+  ${ARI_DERIVED_DIR}/fft
+package-fft_mod/test-test_fft/test_sandbox 0
